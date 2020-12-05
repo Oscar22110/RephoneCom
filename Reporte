@@ -1,0 +1,27 @@
+//
+//  Reporte.swift
+//  RephoneCom
+//
+//  Created by Oscar on 18/11/20.
+//  Copyright © 2020 Oscar. All rights reserved.
+//
+
+import Foundation
+
+class Reporte{
+    var idReport : String?
+    var Emple : String?
+    var Cali : String?
+    var Inten : String?
+    var Cxq : String?
+    var Velo : String?
+    
+    init(idreporte : String?, empleado : String?, calidad : String?, intensidad: String?, cxq: String?, velocidad: String?) {
+        self.idReport = idreporte
+        self.Emple = empleado
+        self.Cali = calidad
+        self.Inten = intensidad
+        self.Cxq = cxq
+        self.Velo = velocidad
+    }
+}
