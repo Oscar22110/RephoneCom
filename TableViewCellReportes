@@ -1,0 +1,30 @@
+/
+//  TableViewCellReportes.swift
+//  RephoneCom
+//
+//  Created by Oscar on 17/11/20.
+//  Copyright © 2020 Oscar. All rights reserved.
+//
+
+import UIKit
+
+class TableViewCellReportes: UITableViewCell {
+
+    
+
+    @IBOutlet weak var lblEmpleado: UILabel!
+    @IBOutlet weak var lblCalidad: UILabel!
+    @IBOutlet weak var lblIntensidad: UILabel!
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        // Initialization code
+    }
+
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+
+        // Configure the view for the selected state
+    }
+
+}
