@@ -1,0 +1,68 @@
+/
+//  ViewControllerMenùInicial.swift
+//  RephoneCom
+//
+//  Created by Oscar on 17/11/20.
+//  Copyright © 2020 Oscar. All rights reserved.
+//
+
+import UIKit
+
+class ViewControllerMenu_Inicial: UIViewController {
+    var Reportes = [Reporte]()
+    var db : AdminBd = AdminBd()
+    let jsonclass = JsonClass()
+
+    @IBAction func btnLlevarAdmin(_ sender: UIButton) {
+    }
+    
+    
+    @IBAction func btnLlevarEmpleado(_ sender: UIButton) {
+       Reportes.removeAll()
+       let datosEntrada = ["id":""] as NSMutableDictionary
+       jsonclass.arrayFromJson(url: "WSRephone/getReportes.php", datos_enviados: datosEntrada){
+           (array_respuesta) in
+           DispatchQueue.main.async {
+               let NoRegistros = array_respuesta?.count
+               for i in stride(from: 0, to: NoRegistros!, by: 1){
+                   let report = array_respuesta?.object(at: i) as! NSDictionary
+                   let num = report.object(forKey: "IDREPORT") as! String?
+                   let emple = report.object(forKey: "EMPLE") as! String?
+                   let cali = report.object(forKey: "CALIDAD") as! String?
+                   let inten = report.object(forKey: "INTENCIDAD") as! String?
+                   let cxq = report.object(forKey: "CXQ") as! String?
+                   let velo = report.object(forKey: "VELOCIDAD") as! String?
+                self.Reportes.append(Reporte(idreporte: num, empleado: emple, calidad: cali, intensidad: inten, cxq: cxq, velocidad: velo))
+               }
+               self.performSegue(withIdentifier: "segueEmpleado", sender: self)
+           }
+       }
+        /*Reportes = db.ConsultaReportes()
+        self.performSegue(withIdentifier: "segueEmpleado", sender: self)*/
+    }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Do any additional setup after loading the view.
+    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "segueEmpleado"{
+            
+            let table = segue.destination as! TableViewControllerReportes
+            table.Reportes = Reportes
+        }
+    }
+
+    
+
+    /*
+    // MARK: - Navigation
+
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destination.
+        // Pass the selected object to the new view controller.
+    }
+    */
+
+}
