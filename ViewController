@@ -1,0 +1,76 @@
+/
+//  ViewController.swift
+//  RephoneCom
+//
+//  Created by Oscar on 13/11/20.
+//  Copyright © 2020 Oscar. All rights reserved.
+//
+
+import UIKit
+import SQLite3
+
+class ViewController: UIViewController {
+    var Usuarios = [Usuario]()
+
+    @IBOutlet weak var txtCorr: UITextField!
+    @IBOutlet weak var txtNom: UITextField!
+    @IBOutlet weak var txtContra: UITextField!
+    let jsonclass = JsonClass()
+    var db : AdminBd = AdminBd()
+    
+    @IBAction func btnEntrar(_ sender: UIButton) {
+        if txtCorr.text!.isEmpty || txtContra.text!.isEmpty{
+           showToast(Titulo: "Error", Mensaje: "Falta informaciòn")
+           txtCorr.becomeFirstResponder()
+           return
+                        
+        }
+        else{
+            
+            let corr = txtCorr.text
+            let contra = txtContra.text
+            let datosEnviar = ["corrUSR":corr!, "contraUSR":contra!] as NSMutableDictionary
+            jsonclass.arrayFromJson(url: "WSRephone/Registro.php", datos_enviados: datosEnviar)
+            {
+                (array_respuesta)  in
+                DispatchQueue.main.async {
+                    let arregloDatos = array_respuesta?.object(at: 0) as! NSDictionary
+                    if let succ = arregloDatos.object(forKey: "succes") as! String?{
+                        if succ == "200"{
+                            //Insertar informaciòn en SQlite
+                        self.db.InsertUsuario(correoUsuario: corr!, nombreUsuario: "", contraseñaUsuario: contra!)
+                        
+                        }
+                        
+                    }
+                    self.txtCorr.text=""
+                    self.txtContra.text=""
+                }//finde async
+            } // fin de jsonclass
+            self.performSegue(withIdentifier: "segueMenuInicial", sender: self)
+        } //fin else
+    }
+    
+   
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        //Lanzar una busqueda en la tabla de usuario de SQlite
+        if self.db.ConsultaUsuarios(){
+            self.performSegue(withIdentifier: "segueMenuInicial", sender: self)
+        }
+        //self.performSegue(withIdentifier: "segueMenuInicial", sender: self)
+        
+        
+    }
+   
+      func showToast(Titulo : String, Mensaje : String){
+              let alert = UIAlertController(title : Titulo , message: Mensaje, preferredStyle: UIAlertController.Style.alert)
+              alert.addAction(UIAlertAction(title: "Aceptar", style: UIAlertAction.Style.default, handler: nil))
+              
+              self.present(alert,animated: true, completion: nil)
+
+         }
+
+
+}
+
