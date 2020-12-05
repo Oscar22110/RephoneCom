@@ -1,0 +1,21 @@
+//
+//  Usuario.swift
+//  RephoneCom
+//
+//  Created by Oscar on 13/11/20.
+//  Copyright © 2020 Oscar. All rights reserved.
+//
+
+import Foundation
+
+class Usuario{
+    var corrUsr : String
+    var nomUsr : String
+    var contraUsr : String
+    
+    init(correoUsuario : String, nombreUsuario : String, contraseñaUsuario : String) {
+        self.corrUsr = correoUsuario
+        self.nomUsr = nombreUsuario
+        self.contraUsr = contraseñaUsuario
+    }
+}
