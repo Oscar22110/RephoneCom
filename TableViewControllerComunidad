@@ -1,0 +1,79 @@
+
+//  TableViewControllerComunidad.swift
+//  RephoneCom
+//
+//  Created by Oscar on 14/12/20.
+//  Copyright © 2020 Oscar. All rights reserved.
+//
+
+import UIKit
+
+class TableViewControllerComunidad: UITableViewController {
+   public var Comunidades = [Comunidad]()
+    
+    @IBOutlet var TablaComunidades: UITableView!
+     var comu = Comunidad(CLAVE: "", NOMCOMUNIDAD: "", ENCARGADO: "")
+
+    @IBAction func btnFormComunidades(_ sender: UIButton) {
+        self.performSegue(withIdentifier: "segueFormComunidad", sender: self)
+    }
+    
+   
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        TablaComunidades.reloadData()
+    }
+
+    // MARK: - Table view data source
+
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        // #warning Incomplete implementation, return the number of sections
+        return 1
+    }
+
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        // #warning Incomplete implementation, return the number of rows
+        return Comunidades.count
+    }
+
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "celdaComunidad") as! TableViewCellComunidad
+        
+
+        let comu : Comunidad
+        comu = Comunidades[indexPath.row]
+        cell.TituloComunidad.text = comu.clave
+        cell.SubtituloComunidad.text = comu.encargado
+
+        return cell
+    }
+        //Funcion que aparece un toast en el table view con los datos del elemento seleccionado
+        /*override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+            let cte = Productos[indexPath.row]
+            showToast(Titulo: "Producto seleccionado", Mensaje: "Nombre del Producto:\(cte.nomProd), Precio:\(cte.Precio)")
+        }*/
+
+       func showToast(Titulo : String, Mensaje : String){
+            let alert = UIAlertController(title : Titulo , message: Mensaje, preferredStyle: UIAlertController.Style.alert)
+            alert.addAction(UIAlertAction(title: "Aceptar", style: UIAlertAction.Style.default, handler: nil))
+            
+            self.present(alert,animated: true, completion: nil)
+
+       }
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        comu = Comunidades[indexPath.row]
+        performSegue(withIdentifier: "segueFormComunidad", sender: self)
+        
+    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "segueFormComunidad"{
+            let vc = segue.destination as! ViewControllerComunidades
+            vc.Comu = comu
+        }
+    }
+
+
+}
