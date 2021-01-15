@@ -1,0 +1,147 @@
+//
+//  ViewControllerComunidades.swift
+//  RephoneCom
+//
+//  Created by Oscar on 22/12/20.
+//  Copyright © 2020 Oscar. All rights reserved.
+//
+
+import UIKit
+
+class ViewControllerComunidades: UIViewController {
+    var Comunidades = [Comunidad]()
+    
+    @IBOutlet weak var txtClaveComu: UITextField!
+    @IBOutlet weak var txtNomComu: UITextField!
+    @IBOutlet weak var txtEncargaComu: UITextField!
+    let jsonclass = JsonClass()
+    
+    var db : AdminBd = AdminBd()
+    public var Comu = Comunidad(CLAVE: "", NOMCOMUNIDAD: "", ENCARGADO: "")
+    
+    @IBAction func InsertComu(_ sender: UIButton) {
+        if txtClaveComu.text!.isEmpty || txtNomComu.text!.isEmpty || txtEncargaComu.text!.isEmpty{
+                      showToast(Titulo: "Error", Mensaje: "Falta informaciòn")
+                          txtClaveComu.becomeFirstResponder()
+                      }
+                      else{
+                   let clave = txtClaveComu.text
+                   let nomcomu = txtNomComu.text
+                   let emcarga = txtEncargaComu.text
+                  
+                   db.InsertComunidad(CLAVE: clave!, NOMCOMUNIDAD: nomcomu!, ENCARGADO: emcarga!)
+           
+                   //Productos.append(Producto(idProducto: idp!, nomProducto: nomp, precioProducto: prec!))
+                          txtClaveComu.text = ""
+                          txtNomComu.text = ""
+                          txtEncargaComu.text = ""
+                        
+                          showToast(Titulo: "Guardando", Mensaje: "Comunidad Agregada")
+                          txtClaveComu.becomeFirstResponder()
+                      }
+    }
+    
+    @IBAction func UpdateComu(_ sender: UIButton) {
+        if txtClaveComu.text!.isEmpty || txtNomComu.text!.isEmpty || txtEncargaComu.text!.isEmpty{
+                      showToast(Titulo: "Error", Mensaje: "Falta informaciòn")
+                          txtClaveComu.becomeFirstResponder()
+                      }
+        else{
+            let clave = String (txtClaveComu.text!)
+            let nomComu = String (txtNomComu.text!)
+            let encarga = String (txtEncargaComu.text!)
+            
+            db.UpdateComunidad(CLAVE: clave, NOMCOMUNIDAD: nomComu, ENCARGADO: encarga)
+            txtClaveComu.text = ""
+            txtNomComu.text = ""
+            txtEncargaComu.text = ""
+            showToast(Titulo: "Guardando", Mensaje: "Comunidad Actualizada")
+            txtClaveComu.becomeFirstResponder()
+        }
+    }
+    
+    @IBAction func DeleteComu(_ sender: UIButton) {
+        if txtClaveComu.text!.isEmpty {
+        showToast(Titulo: "Error", Mensaje: "Falta informaciòn")
+            txtClaveComu.becomeFirstResponder()
+        }
+        else{
+            let clave = txtClaveComu.text
+            db.EliminarComunidad(CLAVE: clave!)
+            txtClaveComu.text = ""
+            txtNomComu.text = ""
+            txtEncargaComu.text = ""
+            showToast(Titulo: "Guardando", Mensaje: "Comunidad Eliminada")
+            txtClaveComu.becomeFirstResponder()
+        }
+    }
+    
+    @IBAction func BuscarComu(_ sender: UIButton) {
+        if txtClaveComu.text!.isEmpty{
+                   showToast(Titulo: "Error", Mensaje: "Falta ingresar la clave de la Comunidad")
+                   txtClaveComu.becomeFirstResponder()
+               }
+               else{
+                     let clave = String(txtClaveComu.text!)
+                     let comun : Comunidad = db.ConsultaByIdComunidad(CLAVE: clave)
+                     txtNomComu.text = comun.nomComu
+                     txtEncargaComu.text = comun.encargado
+                     showToast(Titulo: "Buscando", Mensaje: "Comunidad Localizado")
+                     txtClaveComu.becomeFirstResponder()
+                    
+               }
+
+    }
+    
+    @IBAction func DescargarComu(_ sender: UIButton) {
+        Comunidades.removeAll()
+        let datosEntrada = ["id":""] as NSMutableDictionary
+        jsonclass.arrayFromJson(url: "WSRephone/getComunidades.php", datos_enviados: datosEntrada){
+            (array_respuesta) in
+            DispatchQueue.main.async {
+                let NoRegistros = array_respuesta?.count
+                for i in stride(from: 0, to: NoRegistros!, by: 1){
+                    let comu = array_respuesta?.object(at: i) as! NSDictionary
+                    let clave = comu.object(forKey: "CLAVE") as! String?
+                    let nomcomu = comu.object(forKey: "NOMCOMUNIDAD") as! String?
+                    let encarg = comu.object(forKey: "ENCARGADO") as! String?
+                   
+                 self.Comunidades.append(Comunidad(CLAVE: clave, NOMCOMUNIDAD: nomcomu, ENCARGADO: encarg))
+                }
+                self.performSegue(withIdentifier: "segueComunList", sender: self)
+            }
+        }
+    }
+    
+    
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Do any additional setup after loading the view.
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        if Comu.clave != nil{
+            txtClaveComu.text = Comu.clave
+            txtNomComu.text = Comu.nomComu
+            txtEncargaComu.text = Comu.encargado
+               
+           }
+       }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "segueComunList"{
+            let table = segue.destination as! TableViewControllerComunidad
+            table.Comunidades = Comunidades
+        }
+    }
+        
+        func showToast(Titulo : String, Mensaje : String){
+                     let alert = UIAlertController(title : Titulo , message: Mensaje, preferredStyle: UIAlertController.Style.alert)
+                     alert.addAction(UIAlertAction(title: "Aceptar", style: UIAlertAction.Style.default, handler: nil))
+                     
+                     self.present(alert,animated: true, completion: nil)
+
+                }
+
+}
