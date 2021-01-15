@@ -1,0 +1,157 @@
+
+//  ViewControllerUsuarios.swift
+//  RephoneCom
+//
+//  Created by Oscar on 29/12/20.
+//  Copyright © 2020 Oscar. All rights reserved.
+//
+
+import UIKit
+
+class ViewControllerUsuarios: UIViewController {
+     var Usuarios = [Usuario]()
+
+    
+    @IBOutlet weak var txtCorrUsu: UITextField!
+    @IBOutlet weak var txtNomUsu: UITextField!
+    @IBOutlet weak var txtContraUsu: UITextField!
+    let jsonclass = JsonClass()
+    
+    var db : AdminBd = AdminBd()
+    public var Usu = Usuario(correoUsuario: "", nombreUsuario: "", contraseñaUsuario: "")
+    
+    
+    @IBAction func InsertUsuario(_ sender: UIButton) {
+        if txtCorrUsu.text!.isEmpty || txtNomUsu.text!.isEmpty || txtContraUsu.text!.isEmpty{
+                          showToast(Titulo: "Error", Mensaje: "Falta informaciòn")
+                              txtCorrUsu.becomeFirstResponder()
+                          }
+                          else{
+                       let corr = txtCorrUsu.text
+                       let nom = txtNomUsu.text
+                       let contra = txtContraUsu.text
+                       db.InsertUsuario(correoUsuario: corr!, nombreUsuario: nom!, contraseñaUsuario: contra!)
+                       
+                       
+                      //Productos.append(Producto(idProducto: idp!, nomProducto: nomp, precioProducto: prec!))
+                              txtCorrUsu.text = ""
+                              txtNomUsu.text = ""
+                              txtContraUsu.text = ""
+                            
+                              
+                              showToast(Titulo: "Guardando", Mensaje: "Usuario Agregado")
+                              txtCorrUsu.becomeFirstResponder()
+                          }
+        }
+    
+    @IBAction func UpdateUsuario(_ sender: UIButton) {
+        if txtCorrUsu.text!.isEmpty || txtNomUsu.text!.isEmpty || txtContraUsu.text!.isEmpty{
+                         showToast(Titulo: "Error", Mensaje: "Falta informaciòn")
+                           txtCorrUsu.becomeFirstResponder()
+                        }
+                        else{
+                    let corr = String (txtCorrUsu.text!)
+                    let nom = String (txtNomUsu.text!)
+                    let contra = String (txtContraUsu.text!)
+                    db.UpdateUsuarios(correoUsuario: corr, nombreUsuario: nom, contraseñaUsuario: contra)
+                    
+                    txtCorrUsu.text = ""
+                    txtNomUsu.text = ""
+                    txtContraUsu.text = ""
+            
+           
+                    showToast(Titulo: "Actualizando", Mensaje: "Usuario Actualizado")
+                    txtCorrUsu.becomeFirstResponder()
+        }
+
+
+    }
+    
+    @IBAction func DeleteUsuario(_ sender: UIButton) {
+        if txtCorrUsu.text!.isEmpty {
+                         showToast(Titulo: "Error", Mensaje: "Falta informaciòn")
+                             txtCorrUsu.becomeFirstResponder()
+                         }
+                         else{
+                             let corr = txtCorrUsu.text
+                             db.EliminarUsuario(correoUsuario: corr!)
+                             
+                             txtCorrUsu.text = ""
+                             txtNomUsu.text = ""
+                             txtContraUsu.text = ""
+                                            
+                             showToast(Titulo: "Eliminando", Mensaje: "Usuario eliminado")
+                             txtCorrUsu.becomeFirstResponder()
+                         }
+    }
+    
+    @IBAction func BuscarUsuario(_ sender: UIButton) {
+        if txtCorrUsu.text!.isEmpty{
+            showToast(Titulo: "Error", Mensaje: "Falta ingresar el correo del Usuario")
+            txtCorrUsu.becomeFirstResponder()
+        }
+        else{
+            let corr = String(txtCorrUsu.text!)
+            let usu : Usuario = db.ConsultaByIdUsuarios(correoUsuario: corr)
+            txtNomUsu.text = usu.nomUsr
+            txtContraUsu.text = usu.contraUsr
+            showToast(Titulo: "Buscando", Mensaje: "Usuario Localizado")
+            txtCorrUsu.becomeFirstResponder()
+        }
+    }
+    
+    @IBAction func CargarUsuarios(_ sender: UIButton) {
+        Usuarios.removeAll()
+        let datosEntrada = ["id":""] as NSMutableDictionary
+        jsonclass.arrayFromJson(url: "WSRephone/getUsuarios.php", datos_enviados: datosEntrada){
+            (array_respuesta) in
+            DispatchQueue.main.async {
+                let NoRegistros = array_respuesta?.count
+                for i in stride(from: 0, to: NoRegistros!, by: 1){
+                    let usua = array_respuesta?.object(at: i) as! NSDictionary
+                    let corr = usua.object(forKey: "corrUSR") as! String?
+                    let nom = usua.object(forKey: "nomUSR") as! String?
+                    let contra = usua.object(forKey: "contraUSR") as! String?
+                   
+                 self.Usuarios.append(Usuario(correoUsuario: corr, nombreUsuario: nom, contraseñaUsuario: contra))
+                }
+                self.performSegue(withIdentifier: "segueUsuList", sender: self)
+            }
+        }
+        
+    }
+    
+    
+    
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Do any additional setup after loading the view.
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        if Usu.corrUsr != nil{
+            txtCorrUsu.text = Usu.corrUsr
+            txtNomUsu.text = Usu.nomUsr
+            txtContraUsu.text = Usu.contraUsr
+              
+           }
+       }
+       
+
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+      if segue.identifier == "segueUsuList"{
+          let table = segue.destination as! TableViewControllerUsuarios
+          table.Usuarios = Usuarios
+      }
+  }
+      
+      func showToast(Titulo : String, Mensaje : String){
+                   let alert = UIAlertController(title : Titulo , message: Mensaje, preferredStyle: UIAlertController.Style.alert)
+                   alert.addAction(UIAlertAction(title: "Aceptar", style: UIAlertAction.Style.default, handler: nil))
+                   
+                   self.present(alert,animated: true, completion: nil)
+
+              }
+}
