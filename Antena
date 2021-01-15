@@ -1,0 +1,24 @@
+//
+//  Antena.swift
+//  RephoneCom
+//
+//  Created by Omar on 16/12/20.
+//  Copyright © 2020 Oscar. All rights reserved.
+//
+
+import Foundation
+class Antena{
+    var claveAnt : String?
+    var nomAnt : String?
+    var model : String?
+    var tipoAnt : String?
+  
+    
+    init(CLAVEANT : String?, NOMANTENA : String?, MODELO : String?, TIPOANTENA: String?) {
+        self.claveAnt = CLAVEANT
+        self.nomAnt = NOMANTENA
+        self.model = MODELO
+        self.tipoAnt = TIPOANTENA
+      
+    }
+}
