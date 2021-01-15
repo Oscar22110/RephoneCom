@@ -1,0 +1,22 @@
+//  Comunidad.swift
+//  RephoneCom
+//
+//  Created by Omar on 14/12/20.
+//  Copyright © 2020 Oscar. All rights reserved.
+//
+
+import Foundation
+
+class Comunidad{
+    var clave : String?
+    var nomComu : String?
+    var encargado : String?
+    
+    
+    init(CLAVE : String?, NOMCOMUNIDAD : String?, ENCARGADO : String?) {
+        self.clave = CLAVE
+        self.nomComu = NOMCOMUNIDAD
+        self.encargado = ENCARGADO
+       
+    }
+}
