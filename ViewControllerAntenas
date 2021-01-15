@@ -1,0 +1,159 @@
+//  ViewControllerAntenas.swift
+//  RephoneCom
+//
+//  Created by Oscar on 23/12/20.
+//  Copyright © 2020 Oscar. All rights reserved.
+//
+
+import UIKit
+
+class ViewControllerAntenas: UIViewController {
+    var Antenas = [Antena]()
+
+    @IBOutlet weak var txtClaveAnt: UITextField!
+    @IBOutlet weak var txtNomAnt: UITextField!
+    @IBOutlet weak var txtModelAnt: UITextField!
+    @IBOutlet weak var txtTipoAnt: UITextField!
+    let jsonclass = JsonClass()
+    
+    var db : AdminBd = AdminBd()
+    public var Ant = Antena(CLAVEANT: "", NOMANTENA: "", MODELO: "", TIPOANTENA: "")
+    
+    @IBAction func InsertAntena(_ sender: UIButton) {
+        if txtClaveAnt.text!.isEmpty || txtNomAnt.text!.isEmpty || txtModelAnt.text!.isEmpty || txtTipoAnt.text!.isEmpty{
+                   showToast(Titulo: "Error", Mensaje: "Falta informaciòn")
+                       txtClaveAnt.becomeFirstResponder()
+                   }
+                   else{
+                let clave = txtClaveAnt.text
+                let nomAnt = txtNomAnt.text
+                let model = txtModelAnt.text
+                let tipoAnt = txtTipoAnt.text
+                db.InsertAntena(CLAVEANT: clave!, NOMANTENA: nomAnt!, MODELO: model!, TIPOANTENA: tipoAnt!)
+                
+                
+               //Productos.append(Producto(idProducto: idp!, nomProducto: nomp, precioProducto: prec!))
+                       txtClaveAnt.text = ""
+                       txtNomAnt.text = ""
+                       txtModelAnt.text = ""
+                       txtTipoAnt.text = ""
+                       
+                       showToast(Titulo: "Guardando", Mensaje: "Antena Agregada")
+                       txtClaveAnt.becomeFirstResponder()
+                   }
+    }
+    
+    @IBAction func UpdateAntena(_ sender: UIButton) {
+           if txtClaveAnt.text!.isEmpty || txtNomAnt.text!.isEmpty || txtModelAnt.text!.isEmpty || txtTipoAnt.text!.isEmpty{
+                     showToast(Titulo: "Error", Mensaje: "Falta informaciòn")
+                         txtClaveAnt.becomeFirstResponder()
+                     }
+               else{
+                   let clave = String (txtClaveAnt.text!)
+                   let nomAnt = String (txtNomAnt.text!)
+                   let model = String (txtModelAnt.text!)
+                   let tipoAnt = String (txtTipoAnt.text!)
+                   db.UpdateAntenas(CLAVEANT: clave, NOMANTENA: nomAnt, MODELO: model, TIPOANTENA: tipoAnt)
+                   
+                   txtClaveAnt.text = ""
+                   txtNomAnt.text = ""
+                   txtModelAnt.text = ""
+                   txtTipoAnt.text = ""
+                  
+                   showToast(Titulo: "Actualizando", Mensaje: "Antena Actualizada")
+                   txtClaveAnt.becomeFirstResponder()
+               }
+    }
+    
+    @IBAction func DeleteAntena(_ sender: UIButton) {
+        if txtClaveAnt.text!.isEmpty {
+                     showToast(Titulo: "Error", Mensaje: "Falta informaciòn")
+                         txtClaveAnt.becomeFirstResponder()
+                     }
+                     else{
+                         let clave = txtClaveAnt.text
+                         db.EliminarAntena(CLAVEANT: clave!)
+                         txtClaveAnt.text = ""
+                         txtNomAnt.text = ""
+                         txtModelAnt.text = ""
+                         txtTipoAnt.text = ""
+                                        
+                         showToast(Titulo: "Eliminando", Mensaje: "Antena eliminada")
+                         txtClaveAnt.becomeFirstResponder()
+                     }
+
+    }
+    
+    @IBAction func BuscarAntena(_ sender: UIButton) {
+        if txtClaveAnt.text!.isEmpty{
+            showToast(Titulo: "Error", Mensaje: "Falta ingresar la Clave de la Antena")
+            txtClaveAnt.becomeFirstResponder()
+        }
+        else{
+            let clave = String(txtClaveAnt.text!)
+            let ant : Antena = db.ConsultaByIdAntena(CLAVEANT: clave)
+            txtNomAnt.text = ant.nomAnt
+            txtModelAnt.text = ant.model
+            txtTipoAnt.text = ant.tipoAnt
+            showToast(Titulo: "Buscando", Mensaje: "Antena Localizada")
+            txtClaveAnt.becomeFirstResponder()
+        }
+    }
+    
+    @IBAction func DescargaAntenas(_ sender: UIButton) {
+        Antenas.removeAll()
+                     let datosEntrada = ["id":""] as NSMutableDictionary
+                     jsonclass.arrayFromJson(url: "WSRephone/getAntenas.php", datos_enviados: datosEntrada){
+                         (array_respuesta) in
+                         DispatchQueue.main.async {
+                             let NoRegistros = array_respuesta?.count
+                             for i in stride(from: 0, to: NoRegistros!, by: 1){
+                                 let ant = array_respuesta?.object(at: i) as! NSDictionary
+                                 let claveAnt = ant.object(forKey: "CLAVEANT") as! String?
+                                 let nomAnt = ant.object(forKey: "NOMANTENA") as! String?
+                                 let model = ant.object(forKey: "MODELO") as! String?
+                                 let tipoAnt = ant.object(forKey: "TIPOANTENA") as! String?
+                              self.Antenas.append(Antena(CLAVEANT: claveAnt, NOMANTENA: nomAnt, MODELO: model, TIPOANTENA: tipoAnt))
+                             }
+                             self.performSegue(withIdentifier: "segueAntList", sender: self)
+                         }
+                     }
+    }
+    
+    
+    
+    
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Do any additional setup after loading the view.
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        if Ant.claveAnt != nil{
+            txtClaveAnt.text = Ant.claveAnt
+            txtNomAnt.text = Ant.nomAnt
+            txtModelAnt.text = Ant.model
+            txtTipoAnt.text = Ant.tipoAnt
+          
+    }
+}
+
+    
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "segueAntList"{
+            let table = segue.destination as! TableViewControllerAntena
+            table.Antenas = Antenas
+        }
+    }
+        
+        func showToast(Titulo : String, Mensaje : String){
+                     let alert = UIAlertController(title : Titulo , message: Mensaje, preferredStyle: UIAlertController.Style.alert)
+                     alert.addAction(UIAlertAction(title: "Aceptar", style: UIAlertAction.Style.default, handler: nil))
+                     
+                     self.present(alert,animated: true, completion: nil)
+
+                }
+
+}
