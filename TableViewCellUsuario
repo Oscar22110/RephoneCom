@@ -1,0 +1,27 @@
+//  TableViewCellUsuario.swift
+//  RephoneCom
+//
+//  Created by Oscar on 14/12/20.
+//  Copyright © 2020 Oscar. All rights reserved.
+//
+
+import UIKit
+
+class TableViewCellUsuario: UITableViewCell {
+
+    @IBOutlet weak var lblTituloUsuario: UILabel!
+    @IBOutlet weak var lblSubtituloUsuario: UILabel!
+    
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        // Initialization code
+    }
+
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+
+        // Configure the view for the selected state
+    }
+
+}
