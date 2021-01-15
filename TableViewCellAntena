@@ -1,0 +1,28 @@
+//  TableViewCellAntena.swift
+//  RephoneCom
+//
+//  Created by Oscar on 16/12/20.
+//  Copyright © 2020 Oscar. All rights reserved.
+//
+
+import UIKit
+
+class TableViewCellAntena: UITableViewCell {
+
+    @IBOutlet weak var TituloAntena: UILabel!
+    @IBOutlet weak var SubtituloAntena: UILabel!
+    
+    
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        // Initialization code
+    }
+
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+
+        // Configure the view for the selected state
+    }
+
+}
