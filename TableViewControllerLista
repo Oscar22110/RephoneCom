@@ -1,0 +1,78 @@
+
+//  TableViewControllerLista.swift
+//  RephoneCom
+//
+//  Created by Oscar on 14/12/20.
+//  Copyright © 2020 Oscar. All rights reserved.
+//
+
+import UIKit
+
+class TableViewControllerLista: UITableViewController {
+    public var Reportes = [Reporte]()
+   
+    
+    @IBOutlet var Tabla: UITableView!
+     var lista = Reporte(idreporte: "", empleado: "", calidad: "", intensidad: "", cxq: "", velocidad: "")
+    
+    @IBAction func FormUsuarios(_ sender: UIButton) {
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        Tabla.reloadData()
+    }
+
+    // MARK: - Table view data source
+
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        // #warning Incomplete implementation, return the number of sections
+        return 1
+    }
+
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        // #warning Incomplete implementation, return the number of rows
+        return Reportes.count
+    }
+
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "CeldaLista") as! TableViewCellLista
+
+        let repo : Reporte
+        repo = Reportes[indexPath.row]
+        cell.Titulo.text = repo.idReport
+        cell.Subtitulo.text = repo.Cali
+
+        return cell
+    }
+        //Funcion que aparece un toast en el table view con los datos del elemento seleccionado
+        /*override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+            let cte = Productos[indexPath.row]
+            showToast(Titulo: "Producto seleccionado", Mensaje: "Nombre del Producto:\(cte.nomProd), Precio:\(cte.Precio)")
+        }*/
+
+       func showToast(Titulo : String, Mensaje : String){
+            let alert = UIAlertController(title : Titulo , message: Mensaje, preferredStyle: UIAlertController.Style.alert)
+            alert.addAction(UIAlertAction(title: "Aceptar", style: UIAlertAction.Style.default, handler: nil))
+            
+            self.present(alert,animated: true, completion: nil)
+
+       }
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+           lista = Reportes[indexPath.row]
+           performSegue(withIdentifier: "segueReportes2", sender: self)
+           
+       }
+       override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+           if segue.identifier == "segueReportes2"{
+               let vc = segue.destination as! ViewControllerReportes
+               vc.Repo = lista
+           }
+       }
+    }
+
+
+       
+
